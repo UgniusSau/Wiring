@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wiring.Data;
 
 namespace Wiring.Repositories;
@@ -29,6 +23,7 @@ public class HarnessRepository : IHarnessRepository
                         Drawing_version AS DrawingVersion
                     FROM 
                         Harness_drawing";
+
         var harnesses = await _context.Set<HarnessDTO>().FromSqlRaw(query).ToListAsync();
         return harnesses;
     }

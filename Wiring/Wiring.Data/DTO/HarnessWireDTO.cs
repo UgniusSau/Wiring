@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Wiring.Data;
+﻿namespace Wiring.Data;
 
 public partial class HarnessWireDTO
 {

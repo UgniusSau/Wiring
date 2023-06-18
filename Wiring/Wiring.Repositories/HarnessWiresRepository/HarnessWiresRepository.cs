@@ -27,6 +27,7 @@ namespace Wiring.Repositories
                             Harness_wires 
                         WHERE 
                             Harness_ID = @id";
+
             var harnessWires = await _context.Set<HarnessWireDTO>()
                 .FromSqlRaw(query, new SqliteParameter("@id", id))
                 .ToListAsync();

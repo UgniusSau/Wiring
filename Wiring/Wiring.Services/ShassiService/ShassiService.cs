@@ -73,7 +73,6 @@ namespace Wiring.Services
                     }
                 }
             }
-           
 
             return validatedComplect;
         }
@@ -89,7 +88,6 @@ namespace Wiring.Services
                     port = housing.Substring(0, housing.IndexOf(':'));
                 }
                 
-
                 if (occupiedHousings.Contains(port))
                 {
                     return false;
