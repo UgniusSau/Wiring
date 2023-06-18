@@ -9,5 +9,5 @@ namespace Wiring.Services;
 
 public interface IShassiService
 {
-    Task<IEnumerable<Harness>> GenerateShassi();
+    Task<IEnumerable<ShassiResponse>> GenerateAndValidateShassi();
 }

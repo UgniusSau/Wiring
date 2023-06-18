@@ -1,17 +1,77 @@
 ﻿@page "/"
+@using Wiring.Data;
+@inject HttpClient HttpClient
 
 <PageTitle>Index</PageTitle>
 
-<button @onclick="onClickGenerate" class="btn btn-primary">Generuoti</button>
+<button @onclick="onClickGenerate">Generuoti</button>
+
+@if (Shassi != null)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Harness1</th>
+                <th>Harness2</th>
+                <th>Housing</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var harnessPair in Shassi)
+            {
+                <tr>
+                    <td>
+                        @harnessPair.Harness1.ToString()
+                    </td>
+                    <td>
+                        @harnessPair.Harness2.ToString()
+                    </td>
+                    <td style="background-color: @(harnessPair.IsValid ? "white" : "red")">
+                        <pre>
+                            @harnessPair.Housing
+                        </pre>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    if(clicked)
+    {
+        <p>Something went wrong</p>
+    }
+}
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+</style>
+
 
 @code
 {
-    private void onClickGenerate ()
+    private List<ShassiResponse>? Shassi;
+    bool clicked;
+
+    private async void onClickGenerate ()
     {
-        //var response = await HttpClient.GetAsync($"https://localhost:7276/api/lucky-wheel/spin?username={GameForm.Username}");
-        //if (response.IsSuccessStatusCode)
-        //{
-            
-        //}
-    }
+        var response = await HttpClient.GetAsync("http://localhost:5036/api/v1/Wiring/generate-shassi");
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<List<ShassiResponse>>();
+            Shassi = result;
+        }
+        clicked = true;
+        StateHasChanged();
+    }  
 }

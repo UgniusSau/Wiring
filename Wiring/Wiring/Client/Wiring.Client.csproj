@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Wiring.Data\Wiring.Data.csproj" />
     <ProjectReference Include="..\Shared\Wiring.Shared.csproj" />
   </ItemGroup>
 

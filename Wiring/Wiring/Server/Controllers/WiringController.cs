@@ -18,16 +18,16 @@ namespace Wiring.Server.Controllers
         [HttpGet("generate-shassi")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Harness>>> GenerateShassi()
+        public async Task<ActionResult<IEnumerable<ShassiResponse>>> GenerateAndValidateShassi()
         {
             try
             {
-                var response = await _shassiService.GenerateShassi();
+                var response = await _shassiService.GenerateAndValidateShassi();
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch
             {
-                return BadRequest($"Failed to generate sasshi: {ex.Message}");
+                return BadRequest($"Failed to generate sasshi");
             }
         }
     }

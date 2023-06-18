@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wiring.Data;
+﻿using Wiring.Data;
 using Wiring.Repositories;
 
 namespace Wiring.Services
@@ -19,7 +14,123 @@ namespace Wiring.Services
             _wiresRepository = wiresRepository;
         }
 
-        public async Task<IEnumerable<Harness>> GenerateShassi()
+        public async Task<IEnumerable<ShassiResponse>> GenerateAndValidateShassi()
+        {
+            var shassi = await GenerateShassi();
+            return ValidateShassi(shassi);
+        }
+
+        public List<ShassiResponse> ValidateShassi(IEnumerable<Harness> shassi)
+        {
+            List<ShassiResponse> shassiResponse = new List<ShassiResponse>();
+            
+            for(int i = 0; i < shassi.Count() - 1; i++)
+            {
+                for (int j = i + 1; j < shassi.Count(); j++)
+                { 
+                    var harness1 = shassi.ElementAt(i);
+                    var harness2 = shassi.ElementAt(j);
+                    shassiResponse.Add(ValidateHarnesses(harness1, harness2));
+                }
+            }
+
+            return shassiResponse;
+        }
+
+        private ShassiResponse ValidateHarnesses(Harness harness1, Harness harness2)
+        {
+            var occupiedHousings = new HashSet<string>();
+            
+            var housingWires = string.Join(", ", harness1.Wires.Select(x => x.Housing1 + ", " + x.Housing2));
+            housingWires += Environment.NewLine;
+            housingWires += string.Join(", ", harness2.Wires.Select(x => x.Housing1 + ", " + x.Housing2));
+
+            ShassiResponse validatedComplect = new ShassiResponse
+            {
+                Harness1 = harness1,
+                Harness2 = harness2,
+                Housing = housingWires,
+                IsValid = true
+            };
+
+            foreach (var wire in harness1.Wires)
+            {
+                if(!ValidateHarnessWires(occupiedHousings, wire))
+                {
+                    validatedComplect.IsValid = false;
+                    break;
+                }
+            }
+
+            if(validatedComplect.IsValid)
+            {
+                foreach (var wire in harness2.Wires)
+                {
+                    if (!ValidateHarnessWires(occupiedHousings, wire))
+                    {
+                        validatedComplect.IsValid = false;
+                        break;
+                    }
+                }
+            }
+           
+
+            return validatedComplect;
+        }
+
+        private bool ValidateHarnessWires(HashSet<string> occupiedHousings, HarnessWireDTO wire)
+        {
+            if (!string.IsNullOrEmpty(wire.Housing1))
+            {
+                string port = "";
+                if(wire.Housing1.Contains(':'))
+                {
+                    string housing = wire.Housing1.Trim();
+                    port = housing.Substring(0, housing.IndexOf(':'));
+                }
+                
+
+                if (occupiedHousings.Contains(port))
+                {
+                    return false;
+                }
+                else if (occupiedHousings.Contains(wire.Housing1))
+                {
+                    return false;
+                }
+                else
+                {
+                    occupiedHousings.Add(wire.Housing1);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(wire.Housing2))
+            {
+                string port = "";
+                if (wire.Housing2.Contains(':'))
+                {
+                    string housing = wire.Housing2.Trim();
+                    port = housing.Substring(0, housing.IndexOf(':'));
+                }
+
+                if (occupiedHousings.Contains(port))
+                {
+                    return false;
+                }
+                else if (occupiedHousings.Contains(wire.Housing2))
+                {
+                    return false;
+                }
+                else
+                {
+                    occupiedHousings.Add(wire.Housing2);
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<IEnumerable<Harness>> GenerateShassi()
         {
             Random random = new Random();
             var harnessCount = random.Next(3, 5);
@@ -43,7 +154,7 @@ namespace Wiring.Services
             foreach (var harnessDB in harnessesDB)
             {
                 IEnumerable<HarnessWireDTO> wiresDB = await _wiresRepository.GetWires(harnessDB.Id);
-                List<HarnessWire> wires = ConvertToWireList(wiresDB);
+                var wires = wiresDB.ToList();
 
                 Harness harness = new Harness
                 {
@@ -59,56 +170,6 @@ namespace Wiring.Services
             }
 
             return harnessList;
-        }
-
-        private List<HarnessWire> ConvertToWireList(IEnumerable<HarnessWireDTO> wiresDB)
-        {
-            List<HarnessWire> wires = new List<HarnessWire>();
-         
-            foreach(var wireDB in wiresDB)
-            {
-                (string? housing1Port, string? housing1Pin) = GetHousingPortAndPin(wireDB.Housing1);
-                (string? housing2Port, string? housing2Pin) = GetHousingPortAndPin(wireDB.Housing2);
-
-                HarnessWire wire = new HarnessWire
-                {
-                    Id = wireDB.Id,
-                    HarnessId = wireDB.HarnessId,
-                    Length = wireDB.Length,
-                    Color = wireDB.Color,
-                    Housing1Port = housing1Port,
-                    Housing1Pin = housing1Pin,
-                    Housing2Port = housing2Port,
-                    Housing2Pin = housing2Pin
-                };
-
-                wires.Add(wire);
-            }
-
-            return wires;
-        }
-
-        private (string?, string?) GetHousingPortAndPin(string? housing)
-        {
-            string? housingPort = null;
-            string? housingPin = null;
-
-            if (!string.IsNullOrEmpty(housing))
-            {
-                string[] HousingValues = housing.Split(":");
-
-                if (HousingValues.Length == 1)
-                {
-                    housingPort = HousingValues[0];
-                }
-                else
-                {
-                    housingPort = HousingValues[0];
-                    housingPin = HousingValues[1];
-                }
-            }
-
-            return (housingPort, housingPin);
         }
     }
 }
