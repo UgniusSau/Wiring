@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Wiring.Data\Wiring.Data.csproj" />
+    <ProjectReference Include="..\Wiring.Repositories\Wiring.Repositories.csproj" />
+  </ItemGroup>
+
 </Project>

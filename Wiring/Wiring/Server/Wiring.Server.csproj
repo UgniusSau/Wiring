@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Wiring.Data\Wiring.Data.csproj" />
+    <ProjectReference Include="..\..\Wiring.Services\Wiring.Services.csproj" />
     <ProjectReference Include="..\Client\Wiring.Client.csproj" />
     <ProjectReference Include="..\Shared\Wiring.Shared.csproj" />
   </ItemGroup>

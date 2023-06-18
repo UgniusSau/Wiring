@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Wiring.Data.DTO;
+namespace Wiring.Data;
 
-public partial class HarnessDrawing
+public partial class HarnessDTO
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
     public string? Harness { get; set; }
 

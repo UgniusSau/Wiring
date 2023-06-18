@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Wiring.Data.DTO;
+namespace Wiring.Data;
 
-public partial class HarnessWire
+public partial class HarnessWireDTO
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
-    public long HarnessId { get; set; }
+    public int HarnessId { get; set; }
 
     public float? Length { get; set; }
 

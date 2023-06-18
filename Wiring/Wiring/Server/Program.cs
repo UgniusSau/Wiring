@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Wiring.Data.DTO;
+using Wiring.Data;
+using Wiring.Repositories;
+using Wiring.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +24,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add Dependency injection
-
-
+builder.Services.AddScoped<IShassiService, ShassiService>();
+builder.Services.AddScoped<IHarnessRepository, HarnessRepository>();
+builder.Services.AddScoped<IHarnessWiresRepository, HarnessWiresRepository>();
 
 
 // Add SQLite DbContext
